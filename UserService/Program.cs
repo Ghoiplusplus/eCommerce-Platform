@@ -1,6 +1,10 @@
+using UserService.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMvc();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<UserContext>();
 
 var app = builder.Build();
 

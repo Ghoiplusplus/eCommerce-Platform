@@ -1,14 +1,36 @@
 services:
+  postgresDB:
+    image: postgres
+    container_name: postgres-database
+    restart: always
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_PASSWORD: 123456 # 
+    depends_on:
+        - userservice
+    ports:
+        - "5432:5432"
+
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
+    restart: always
     container_name: user-service
     build:
       context: .
       dockerfile: UserService/Dockerfile
     ports:
         - "8080:8080"
+
   apigateway:
     image: ${DOCKER_REGISTRY-}apigateway
+    restart: always
     container_name: api-gateway
     environment:
         - SECRET="mysecret123"
