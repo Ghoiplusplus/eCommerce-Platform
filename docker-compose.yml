@@ -1,0 +1,21 @@
+services:
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    container_name: user-service
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    ports:
+        - "8080:8080"
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    container_name: api-gateway
+    environment:
+        - SECRET="mysecret123"
+    build:
+        context: .
+        dockerfile: APIGateway/Dockerfile
+    ports:
+        - "7777:8080"
+    depends_on:
+        - userservice

@@ -5,6 +5,8 @@ namespace UserService.Controllers
 {
     public class HomeController : Controller
     {
+        [Route("/")]
+        [HttpGet]
         public string Index()
         {
             return "Hello World!";
