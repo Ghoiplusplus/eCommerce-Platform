@@ -6,8 +6,8 @@ builder.Services.AddMvc();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UserContext>();
-builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddDbContext<UserContext>(); 
+builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Logging.AddConsole();
 
 var app = builder.Build();
