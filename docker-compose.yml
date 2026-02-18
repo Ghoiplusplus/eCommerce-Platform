@@ -22,6 +22,8 @@ services:
     image: ${DOCKER_REGISTRY-}userservice
     restart: always
     container_name: user-service
+    environment: &secret
+        SECRET: "mysupersecret_secretsecretsecretkey!123"
     build:
       context: .
       dockerfile: UserService/Dockerfile
@@ -32,8 +34,7 @@ services:
     image: ${DOCKER_REGISTRY-}apigateway
     restart: always
     container_name: api-gateway
-    environment:
-        - SECRET="mysecret123"
+    environment: *secret
     build:
         context: .
         dockerfile: APIGateway/Dockerfile

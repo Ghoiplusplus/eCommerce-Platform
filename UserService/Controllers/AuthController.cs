@@ -1,21 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserService.Data;
 using UserService.Models;
 using UserService.Services;
 
 namespace UserService.Controllers
 {
-    [Route("/api/auth")]
+    
     [ApiController]
+    [Route("/api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IJwtService jwtService;
-        public AuthController(IJwtService jwtService)
+        private readonly UserContext userContext;
+        public AuthController(IJwtService jwtService, UserContext userContext)
         {
             this.jwtService = jwtService;
+            this.userContext = userContext;
         }
-        //public string Login([FromBody] UserModel user)
-        //{
-
-        //}
+        [HttpPost]
+        public string register([FromBody] UserModel user)
+        {
+            userContext.Users.Add(user);
+            return jwtService.GenerateJwtToken(user);
+        }
     }
 }

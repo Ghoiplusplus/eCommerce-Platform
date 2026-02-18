@@ -4,9 +4,9 @@
   },
   "Routes": [
     {
-      "UpstreamPathTemplate": "/gateway/index",
-      "UpstreamHttpMethod": [ "GET" ],
-      "DownstreamPathTemplate": "/",
+      "UpstreamPathTemplate": "/gateway/register",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamPathTemplate": "/api/auth",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
