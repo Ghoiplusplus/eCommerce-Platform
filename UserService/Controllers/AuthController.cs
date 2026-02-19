@@ -7,7 +7,6 @@ namespace UserService.Controllers
 {
     
     [ApiController]
-    [Route("/api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IJwtService jwtService;
@@ -17,11 +16,18 @@ namespace UserService.Controllers
             this.jwtService = jwtService;
             this.userContext = userContext;
         }
-        [HttpPost]
-        public string register([FromBody] UserModel user)
+        [HttpPost("/api/auth")]
+        public async Task register([FromBody] UserModel user)
         {
             userContext.Users.Add(user);
-            return jwtService.GenerateJwtToken(user);
+            await userContext.SaveChangesAsync();
+            await HttpContext.Response.WriteAsJsonAsync(jwtService.GenerateJwtToken(user));
+        }
+
+        [HttpGet("/api/profile")]
+        public async Task profile()
+        {
+            await HttpContext.Response.WriteAsJsonAsync($"Пользователь авторизован \n{HttpContext.Request.Body.ToString()}");
         }
     }
 }

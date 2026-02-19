@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using UserService.JwtConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +12,7 @@ builder.Configuration
 builder.Services
     .AddOcelot(builder.Configuration);
 
-builder.Services
-    .AddAuthentication()
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddJwtAuthentication();
 
 if (builder.Environment.IsDevelopment())
 {

@@ -13,9 +13,21 @@
           "Host": "userservice",
           "Port": 8080
         }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/profile",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/profile",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 8080
+        }
       ],
       "AuthenticationOptions": {
-
+        "AuthenticationProviderKeys": [ "Bearer" ]
       }
     }
   ]
