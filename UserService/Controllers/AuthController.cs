@@ -5,7 +5,6 @@ using UserService.Services;
 
 namespace UserService.Controllers
 {
-    
     [ApiController]
     public class AuthController : Controller
     {
