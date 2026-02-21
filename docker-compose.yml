@@ -22,13 +22,26 @@ services:
     image: ${DOCKER_REGISTRY-}userservice
     restart: always
     container_name: user-service
-    environment: &secret
+    # String for signing token (change only here)
+    environment: &secret                  
         SECRET: "mysupersecret_secretsecretsecretkey!123"
     build:
       context: .
       dockerfile: UserService/Dockerfile
     ports:
         - "8080:8080"
+ 
+  productcatalog:
+    image: ${DOCKER_REGISTRY-}productcatalog  
+    restart: always
+    container_name: product-catalog
+    build:
+      context: .
+      dockerfile: ProductCatalog/Dockerfile
+    ports:
+        - "5151:8080"
+    depends_on:
+        - userservice
 
   apigateway:
     image: ${DOCKER_REGISTRY-}apigateway

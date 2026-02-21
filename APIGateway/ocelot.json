@@ -18,7 +18,7 @@
     {
       "UpstreamPathTemplate": "/gateway/profile",
       "UpstreamHttpMethod": [ "GET" ],
-      "DownstreamPathTemplate": "/api/profile",
+      "DownstreamPathTemplate": "/api/auth/profile",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -29,6 +29,20 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKeys": [ "Bearer" ]
       }
+    },
+
+    // product catalog routing
+    {
+      "UpstreamPathTemplate": "/gateway/productcatalog",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/product",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "productcatalog",
+          "Port": 8080
+        }
+      ]
     }
   ]
 
