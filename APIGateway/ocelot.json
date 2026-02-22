@@ -1,6 +1,9 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8080"
+    "BaseUrl": "http://localhost:8080",
+    "AuthenticationOptions": {
+      "AuthenticationProviderKeys": ["Bearer"]
+    }
   },
   "Routes": [
     {
@@ -13,7 +16,10 @@
           "Host": "userservice",
           "Port": 8080
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AllowAnonymous": true
+      }
     },
     {
       "UpstreamPathTemplate": "/gateway/profile",
@@ -25,10 +31,7 @@
           "Host": "userservice",
           "Port": 8080
         }
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKeys": [ "Bearer" ]
-      }
+      ]
     },
 
     // product catalog routing
@@ -42,8 +45,40 @@
           "Host": "productcatalog",
           "Port": 8080
         }
+      ],
+      "AuthenticationOptions": {
+        "AllowAnonymous": true
+      }
+    },
+
+    {
+      "UpstreamPathTemplate": "/gateway/productcatalog/{id}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamPathTemplate": "/api/product/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "productcatalog",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AllowAnonymous": true
+      }
+    },
+
+    {
+      "UpstreamPathTemplate": "/gateway/productcatalog/{id}",
+      "UpstreamHttpMethod": [ "POST", "PUT", "DELETE" ],
+      "DownstreamPathTemplate": "/api/product/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "productcatalog",
+          "Port": 8080
+        }
       ]
     }
-  ]
 
+  ]
 }

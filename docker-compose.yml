@@ -28,8 +28,6 @@ services:
     build:
       context: .
       dockerfile: UserService/Dockerfile
-    ports:
-        - "8080:8080"
  
   productcatalog:
     image: ${DOCKER_REGISTRY-}productcatalog  
@@ -38,8 +36,6 @@ services:
     build:
       context: .
       dockerfile: ProductCatalog/Dockerfile
-    ports:
-        - "5151:8080"
     depends_on:
         - userservice
 
