@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Data;
 using ProductCatalog.Model;
 
@@ -12,32 +13,72 @@ namespace ProductCatalog.Contollers
 
         public ProductController(ProductContext productContext)
         {
-            this.productContext = productContext; 
+            this.productContext = productContext;
         }
 
         [HttpPost]
-        public async Task AddProduct([FromBody] ProductModel product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDTO productDTO)
         {
+            var existingCategories = await productContext.Categories
+                .Where(c => productDTO.Categories.Contains(c.Name))
+                .ToListAsync();
+
+            var existingNames = existingCategories.Select(c => c.Name).ToList();
+            var newNames = productDTO.Categories.Except(existingNames);
+
+            foreach (var name in newNames)
+            {
+                existingCategories.Add(new ProductCategoryModel { Name = name });
+            }
+
+            var product = new ProductModel
+            {
+                Name = productDTO.Name,
+                Description = productDTO.Description,
+                Price = productDTO.Price,
+                Categories = existingCategories
+            };
             productContext.Products.Add(product);
             await productContext.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpGet]
-        public async Task GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            IQueryable products = productContext.Products;
-            await HttpContext.Response.WriteAsJsonAsync(products);
+            var products = await productContext.Products
+                    .Include(p => p.Categories)
+                    .Select(p => new ProductDTO
+                    {
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        Categories = p.Categories.Select(c => c.Name).ToList()
+                    })
+                    .ToListAsync();
+
+            return Ok(products);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            ProductModel? product = await productContext.Products.FindAsync(id);
+            var product = productContext.Products
+            .Include(p => p.Categories)
+            .Where(p => p.Id == id)
+            .Select(p => new ProductDTO
+            {
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Categories = p.Categories.Select(c => c.Name).ToList()
+            });
+
             if (product == null)
             {
                 return new ObjectResult("Товар не найден") { StatusCode = 404 };
             }
-            return new JsonResult(product);
+            return Ok(product);
         }
 
         [HttpPut("{id:int}")]

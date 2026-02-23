@@ -16,5 +16,13 @@ namespace ProductCatalog.Data
         {
             optionsBuilder.UseNpgsql("Host=postgresDB;Port=5432;Database=productsdb;Username=postgres;Password=123456");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProductModel>()
+                .HasMany(c => c.Categories)
+                .WithMany(p => p.Products)
+                .UsingEntity(j => j.ToTable("ProductCategoryLinks"));
+        }
     }
 }
