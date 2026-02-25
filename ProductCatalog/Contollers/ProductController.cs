@@ -47,7 +47,6 @@ namespace ProductCatalog.Contollers
         public async Task<IActionResult> GetAll()
         {
             var products = await productContext.Products
-                    .Include(p => p.Categories)
                     .Select(p => new ProductDTO
                     {
                         Name = p.Name,
@@ -63,20 +62,20 @@ namespace ProductCatalog.Contollers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = productContext.Products
-            .Include(p => p.Categories)
-            .Where(p => p.Id == id)
-            .Select(p => new ProductDTO
-            {
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                Categories = p.Categories.Select(c => c.Name).ToList()
-            });
+            var product = await productContext.Products
+                    .Where(p => p.Id == id)
+                    .Select(p => new ProductDTO
+                    {
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        Categories = p.Categories.Select(c => c.Name).ToList()
+                    })
+                    .FirstOrDefaultAsync();
 
             if (product == null)
             {
-                return new ObjectResult("Товар не найден") { StatusCode = 404 };
+                return NotFound("Товар не найден");
             }
             return Ok(product);
         }
@@ -87,7 +86,7 @@ namespace ProductCatalog.Contollers
             ProductModel? product = await productContext.Products.FindAsync(id);
             if (product == null)
             {
-                return new ObjectResult("Товар не найден") { StatusCode = 404 };
+                return NotFound("Товар не найден");
             }
             productContext.Products.Entry(product).CurrentValues.SetValues(productToUpdate);
             await productContext.SaveChangesAsync();
@@ -100,7 +99,7 @@ namespace ProductCatalog.Contollers
             ProductModel? product = await productContext.Products.FindAsync(id);
             if (product == null)
             {
-                return new ObjectResult("Товар не найден") { StatusCode = 404 };
+                return NotFound("Товар не найден");
             }
             productContext.Products.Remove(product);
             await productContext.SaveChangesAsync();

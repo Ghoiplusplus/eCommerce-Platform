@@ -18,6 +18,15 @@ services:
     ports:
         - "5432:5432"
 
+  redisDB:
+    image: redis:8.6.1-alpine
+    restart: always
+    container_name: redis-database
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
     restart: always
@@ -39,6 +48,16 @@ services:
     depends_on:
         - userservice
 
+  shoppingcart:
+    image: ${DOCKER_REGISTRY-}shoppingcart
+    restart: always
+    container_name: product-catalog
+    build:
+      context: .
+      dockerfile: ProductCatalog/Dockerfile
+    depends_on:
+        - userservice
+
   apigateway:
     image: ${DOCKER_REGISTRY-}apigateway
     restart: always
@@ -51,3 +70,7 @@ services:
         - "7777:8080"
     depends_on:
         - userservice
+
+
+volumes:
+    redis-data:

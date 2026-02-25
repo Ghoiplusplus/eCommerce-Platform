@@ -1,9 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost";
+    options.InstanceName = "cache";
+});
 
 var app = builder.Build();
 
