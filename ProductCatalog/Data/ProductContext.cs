@@ -14,7 +14,7 @@ namespace ProductCatalog.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=productsdb;Username=postgres;Password=123456");
+            optionsBuilder.UseNpgsql("Host=postgresDB;Port=5432;Database=productsdb;Username=postgres;Password=123456");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

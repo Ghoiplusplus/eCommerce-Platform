@@ -51,7 +51,7 @@ services:
   shoppingcart:
     image: ${DOCKER_REGISTRY-}shoppingcart
     restart: always
-    container_name: product-catalog
+    container_name: shopping-cart
     build:
       context: .
       dockerfile: ProductCatalog/Dockerfile

@@ -7,11 +7,16 @@ namespace ShoppingCartService.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class ShoppingCartController : ControllerBase
+    public class CartController : ControllerBase
     {
         private readonly IDistributedCache cartCache;
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true, // Игнорировать регистр имен
+            WriteIndented = false               // Для экономии места в кэше
+        };
 
-        public ShoppingCartController(IDistributedCache cartCache)
+        public CartController(IDistributedCache cartCache)
         {
             this.cartCache = cartCache;
         }
@@ -22,15 +27,27 @@ namespace ShoppingCartService.Controllers
             IEnumerable<ShoppingCartItem>? shoppingList = null;
 
             string? token = HttpContext.Request.Headers.Authorization;
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return NotFound();
             }
 
-            var cartList = await cartCache.GetAsync(token);
-            if (cartList != null) shoppingList = JsonSerializer.Deserialize<List<ShoppingCartItem>>(cartList);
+            var cartList = await cartCache.GetAsync(token.Substring("Bearer ".Length));
+            if (cartList != null) shoppingList = JsonSerializer.Deserialize<List<ShoppingCartItem>>(cartList, _jsonOptions);
 
             return Ok(shoppingList);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddCartItem(List<ShoppingCartItem> shoppingCartItems)
+        {
+            string? token = HttpContext.Request.Headers.Authorization;
+            if (string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
+
+            await cartCache.SetStringAsync(token.Substring("Bearer ".Length), JsonSerializer.Serialize(shoppingCartItems));
+            return Ok(shoppingCartItems);
         }
     }
 }
