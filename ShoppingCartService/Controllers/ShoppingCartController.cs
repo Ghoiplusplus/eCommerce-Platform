@@ -10,7 +10,7 @@ namespace ShoppingCartService.Controllers
     public class CartController : ControllerBase
     {
         private readonly IDistributedCache cartCache;
-        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true, // Игнорировать регистр имен
             WriteIndented = false               // Для экономии места в кэше

@@ -5,6 +5,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = "localhost:6379";
+    options.InstanceName  = "cart";
 });
 
 var app = builder.Build();
@@ -15,7 +16,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
-    {
+    { 
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
     });
 }
