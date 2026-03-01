@@ -1,35 +1,36 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using ShoppingCart.Model;
-using StackExchange.Redis;
-using System.Text.Json;
+﻿using StackExchange.Redis;
 
 namespace ShoppingCart.Repository
 {
-    public class RedisRepository(IDatabaseAsync cache)
+    public class RedisRepository
     {
-        public async Task<RedisValue> GetAsync(string key)
+        private string instanceName; 
+        private IDatabaseAsync cache;
+        private string GetKey(string key) => $"{instanceName}:{key}";
+       
+        public RedisRepository()
         {
-            var ProductId = await cache.StringGetAsync(key);
-            if (ProductId == RedisValue.Null)
-            {
-                return RedisValue.Null;
-            }
-            return ProductId;
+            instanceName = "cart";
+
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:6379");
+            cache = redis.GetDatabase();
         }
 
-        public async Task AddAsync(string key, int ProductId)
+        public async Task<HashEntry[]> GetAllAsync(string userId)
         {
-            await cache.SetAddAsync(key, ProductId);
+            var ProductId = await cache.HashGetAllAsync(GetKey(userId));
+            return ProductId.Length == 0 ? null : ProductId;
         }
 
-        public async Task UpdateQuantityAsync(string key, int ProductId)
+        public async Task AddOrUpdateAsync(string userId, int ProductId, int Amount = 1)
         {
-            await cache.HashIncrementAsync(key, ProductId, 1);
+            await cache.HashIncrementAsync(GetKey(userId), ProductId, Amount);
+            await cache.KeyExpireAsync(GetKey(userId), TimeSpan.FromDays(30));
         }
 
-        public async Task DeleteAsync(string key, int ProductId)
+        public async Task DeleteAsync(string userId, int ProductId)
         {
-            await cache.HashDeleteAsync(key, ProductId);
+            await cache.HashDeleteAsync(GetKey(userId), ProductId);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using ShoppingCart.Model;
-using System.Text.Json;
+using ShoppingCart.Repository;
 
 namespace ShoppingCartService.Controllers
 {
@@ -9,14 +7,9 @@ namespace ShoppingCartService.Controllers
     [Route("/api/[controller]")]
     public class CartController : ControllerBase
     {
-        private readonly IDistributedCache cartCache;
-        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true, // Игнорировать регистр имен
-            WriteIndented = false               // Для экономии места в кэше
-        };
+        private readonly RedisRepository cartCache;
 
-        public CartController(IDistributedCache cartCache)
+        public CartController(RedisRepository cartCache)
         {
             this.cartCache = cartCache;
         }
@@ -24,21 +17,23 @@ namespace ShoppingCartService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCart()
         {
-            IEnumerable<ShoppingCartItem>? shoppingList = null;
-
             string? token = HttpContext.Request.Headers.Authorization;
             if (string.IsNullOrEmpty(token))
             {
                 return NotFound();
             }
 
-            var cartList = await cartCache.GetAsync(token.Substring("Bearer ".Length));
-            if (cartList != null) shoppingList = JsonSerializer.Deserialize<List<ShoppingCartItem>>(cartList, _jsonOptions);
+            var cartList = await cartCache.GetAllAsync(token.Substring("Bearer ".Length));
+            if (cartList == null) return Ok(new List<object>());
 
-            return Ok(shoppingList);
+            var response = cartList.Select(x => new {
+                ProductId = (int)x.Name,
+                Quantity = (int)x.Value
+            });
+            return Ok(response);
         }
         [HttpPost]
-        public async Task<IActionResult> AddCartItem(List<ShoppingCartItem> shoppingCartItems)
+        public async Task<IActionResult> AddOrUpdateQuantityAsync(int ProductId, int Amount = 1)
         {
             string? token = HttpContext.Request.Headers.Authorization;
             if (string.IsNullOrEmpty(token))
@@ -46,8 +41,20 @@ namespace ShoppingCartService.Controllers
                 return NotFound();
             }
 
-            await cartCache.SetStringAsync(token.Substring("Bearer ".Length), JsonSerializer.Serialize(shoppingCartItems));
-            return Ok(shoppingCartItems);
+            await cartCache.AddOrUpdateAsync(token.Substring("Bearer ".Length), ProductId, Amount);
+            return Ok();
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCartItem(int ProductId)
+        {
+            string? token = HttpContext.Request.Headers.Authorization;
+            if (string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
+
+            await cartCache.DeleteAsync(token.Substring("Bearer ".Length), ProductId);
+            return Ok();
         }
     }
 }
