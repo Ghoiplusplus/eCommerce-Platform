@@ -9,7 +9,7 @@ namespace OrderService.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrderAsync()
         {
-
+            
             return Created();
         }
 

@@ -9,6 +9,12 @@
         Cancelled
     }
 
+    public class UsersOrderList
+    {
+        public Guid UserId { get; set; }
+        public List<OrderModel> Orders { get; set; }
+    }
+
     public class OrderModel
     {
         public int Id { get; set; }

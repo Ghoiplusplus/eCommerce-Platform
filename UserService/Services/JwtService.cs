@@ -11,7 +11,9 @@ namespace UserService.Services
         private static string _secret = Environment.GetEnvironmentVariable("SECRET");
         public string GenerateJwtToken(UserModel user)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Name) };
+            var claims = new List<Claim> { 
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+            };
             // создаем JWT-токен
             var jwt = new JwtSecurityToken(
                     issuer: "userservice",
