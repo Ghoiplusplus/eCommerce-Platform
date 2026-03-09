@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UserService.Data;
 using UserService.Services;
 
@@ -6,7 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UserContext>(); 
+builder.Services.AddDbContext<UserContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "Development" : "DefaultConnection"));
+});
+
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Logging.AddConsole();
 

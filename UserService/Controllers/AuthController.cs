@@ -17,17 +17,17 @@ namespace UserService.Controllers
             this.userContext = userContext;
         }
         [HttpPost]
-        public async Task register([FromBody] UserModel user)
+        public async Task<IActionResult> register([FromBody] UserModel user)
         {
             userContext.Users.Add(user);
             await userContext.SaveChangesAsync();
-            await HttpContext.Response.WriteAsJsonAsync(jwtService.GenerateJwtToken(user));
+            return Ok(jwtService.GenerateJwtToken(user));
         }
 
         [HttpGet("profile")]
-        public async Task profile()
+        public async Task<IActionResult> profile()
         {
-            await HttpContext.Response.WriteAsJsonAsync($"Пользователь авторизован \n{HttpContext.Request.Body.ToString()}");
+            return Ok($"Пользователь авторизован \\n{HttpContext.Request.Headers.Authorization}");
         }
     }
 }

@@ -1,7 +1,7 @@
 services:
-  postgresDB:
+  postgres-user:
     image: postgres
-    container_name: postgres-database
+    container_name: postgres-user
     restart: always
     # set shared memory limit when using docker compose
     shm_size: 128mb
@@ -12,11 +12,23 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_PASSWORD: 123456 # 
+      POSTGRES_PASSWORD: 123456
     depends_on:
         - userservice
     ports:
         - "5432:5432"
+
+  postgres-order:
+    image: postgres
+    container_name: postgres-order
+    restart: always
+    shm_size: 128mb
+    environment:
+        POSTGRES_PASSWORD: 123456
+    depends_on:
+        - userservice
+    ports:
+        - "5433:5432"
 
   redisDB:
     image: redis:8.6.1-alpine

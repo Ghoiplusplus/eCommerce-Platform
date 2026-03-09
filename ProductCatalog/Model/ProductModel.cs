@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ProductCatalog.Model
+﻿namespace ProductCatalog.Model
 {
     public class ProductModel
     {

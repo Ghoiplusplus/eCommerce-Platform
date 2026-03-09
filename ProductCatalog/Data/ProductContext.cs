@@ -8,8 +8,8 @@ namespace ProductCatalog.Data
         public DbSet<ProductModel> Products { get; set; } = null!;
         public DbSet<ProductCategoryModel> Categories { get; set; } = null!;
 
-        public ProductContext(DbContextOptions<ProductContext> options) : base(options) 
-        { 
+        public ProductContext(DbContextOptions<ProductContext> options) : base(options)
+        {
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

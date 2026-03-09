@@ -4,10 +4,10 @@ namespace ShoppingCart.Repository
 {
     public class RedisRepository
     {
-        private string instanceName; 
+        private string instanceName;
         private IDatabaseAsync cache;
         private string GetKey(string key) => $"{instanceName}:{key}";
-       
+
         public RedisRepository()
         {
             instanceName = "cart";

@@ -26,7 +26,8 @@ namespace ShoppingCartService.Controllers
             var cartList = await cartCache.GetAllAsync(token.Substring("Bearer ".Length));
             if (cartList == null) return Ok(new List<object>());
 
-            var response = cartList.Select(x => new {
+            var response = cartList.Select(x => new
+            {
                 ProductId = (int)x.Name,
                 Quantity = (int)x.Value
             });
@@ -42,7 +43,7 @@ namespace ShoppingCartService.Controllers
             }
 
             await cartCache.AddOrUpdateAsync(token.Substring("Bearer ".Length), ProductId, Amount);
-            return Ok();
+            return Created();
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteCartItem(int ProductId)

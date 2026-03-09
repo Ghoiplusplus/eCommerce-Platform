@@ -40,7 +40,7 @@ namespace ProductCatalog.Contollers
             };
             productContext.Products.Add(product);
             await productContext.SaveChangesAsync();
-            return Ok();
+            return Created();
         }
 
         [HttpGet]

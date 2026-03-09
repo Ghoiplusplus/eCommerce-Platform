@@ -8,12 +8,7 @@ namespace UserService.Data
         public DbSet<UserModel> Users { get; set; } = null!;
         public UserContext(DbContextOptions<UserContext> options) : base(options)
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("Host=postgresDB;Port=5432;Database=usersdb;Username=postgres;Password=123456");
         }
     }
 }
