@@ -17,6 +17,8 @@ services:
         - userservice
     ports:
         - "5432:5432"
+    volumes:
+      - postgres-user:/data
 
   postgres-order:
     image: postgres
@@ -29,6 +31,8 @@ services:
         - userservice
     ports:
         - "5433:5432"
+    volumes:
+      - postgres-order:/data
 
   redisDB:
     image: redis:8.6.1-alpine
@@ -86,3 +90,5 @@ services:
 
 volumes:
     redis-data:
+    postgres-order:
+    postgres-user:

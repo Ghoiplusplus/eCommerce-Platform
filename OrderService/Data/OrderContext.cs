@@ -10,11 +10,5 @@ namespace OrderService.Data
         {
             Database.EnsureCreated();
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<UsersOrderList>()
-                .HasMany(o => o.Orders);
-        }
     }
 }
