@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using UserService.Data;
 using UserService.Services;
 
@@ -9,14 +10,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<UserContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString(builder.Environment.IsDevelopment() ? "Development" : "DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString
+        (builder.Environment.IsDevelopment() ? "Development" : "DefaultConnection"));
 });
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
-builder.Logging.AddConsole();
+
+builder.Services.AddSerilog((services, loggConf) => loggConf
+    .ReadFrom.Configuration(builder.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .WriteTo.Console());
+
 
 var app = builder.Build();
-
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
@@ -28,7 +35,6 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
     });
-
 }
 
 app.Run();

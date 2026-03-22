@@ -10,10 +10,12 @@ namespace ProductCatalog.Contollers
     public class ProductController : ControllerBase
     {
         private readonly ProductContext productContext;
+        private readonly ILogger logger;
 
-        public ProductController(ProductContext productContext)
+        public ProductController(ProductContext productContext, ILogger logger)
         {
             this.productContext = productContext;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -38,8 +40,10 @@ namespace ProductCatalog.Contollers
                 Price = productDTO.Price,
                 Categories = existingCategories
             };
+
             productContext.Products.Add(product);
             await productContext.SaveChangesAsync();
+
             return Created();
         }
 

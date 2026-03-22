@@ -8,53 +8,50 @@ namespace ShoppingCartService.Controllers
     public class CartController : ControllerBase
     {
         private readonly RedisRepository cartCache;
+        private readonly ILogger<CartController> logger;
 
-        public CartController(RedisRepository cartCache)
+        public CartController(RedisRepository cartCache, ILogger<CartController> logger)
         {
             this.cartCache = cartCache;
+            this.logger = logger;
         }
+
+        private string userId => HttpContext.Items["UserId"].ToString();
 
         [HttpGet]
         public async Task<IActionResult> GetCart()
         {
-            string? token = HttpContext.Request.Headers.Authorization;
-            if (string.IsNullOrEmpty(token))
+            var cartList = await cartCache.GetAllAsync(userId);
+            if (cartList == null)
             {
-                return NotFound();
+                logger.LogInformation("{userId} cart empty", userId);
+                return Ok(new List<object>());
             }
-
-            var cartList = await cartCache.GetAllAsync(token.Substring("Bearer ".Length));
-            if (cartList == null) return Ok(new List<object>());
 
             var response = cartList.Select(x => new
             {
                 ProductId = (int)x.Name,
                 Quantity = (int)x.Value
             });
+
+            logger.LogInformation("Found {userId} cart", userId);
+
             return Ok(response);
         }
         [HttpPost]
         public async Task<IActionResult> AddOrUpdateQuantityAsync(int ProductId, int Amount = 1)
         {
-            string? token = HttpContext.Request.Headers.Authorization;
-            if (string.IsNullOrEmpty(token))
-            {
-                return NotFound();
-            }
+            await cartCache.AddOrUpdateAsync(userId, ProductId, Amount);
 
-            await cartCache.AddOrUpdateAsync(token.Substring("Bearer ".Length), ProductId, Amount);
+            logger.LogInformation("Updated {userId} item {productId}", userId, ProductId);
+
             return Created();
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteCartItem(int ProductId)
         {
-            string? token = HttpContext.Request.Headers.Authorization;
-            if (string.IsNullOrEmpty(token))
-            {
-                return NotFound();
-            }
-
-            await cartCache.DeleteAsync(token.Substring("Bearer ".Length), ProductId);
+            await cartCache.DeleteAsync(userId, ProductId);
+            logger.LogInformation("Deleted from {userId} item {productId}", userId, ProductId);
             return Ok();
         }
     }

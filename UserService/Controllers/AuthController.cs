@@ -11,16 +11,23 @@ namespace UserService.Controllers
     {
         private readonly IJwtService jwtService;
         private readonly UserContext userContext;
-        public AuthController(IJwtService jwtService, UserContext userContext)
+        private readonly ILogger<AuthController> logger;
+
+        public AuthController(IJwtService jwtService, UserContext userContext, ILogger<AuthController> logger)
         {
             this.jwtService = jwtService;
             this.userContext = userContext;
+            this.logger = logger;
         }
+
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] UserModel user)
         {
             userContext.Users.Add(user);
             await userContext.SaveChangesAsync();
+
+            logger.LogInformation("Added new user: Email={Email}, Guid={UserId}", user.Email, user.UserId);
+
             return Ok(jwtService.GenerateJwtToken(user));
         }
 
