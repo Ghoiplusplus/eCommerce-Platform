@@ -16,15 +16,15 @@ namespace ShoppingCartService.Controllers
             this.logger = logger;
         }
 
-        private string userId => HttpContext.Items["UserId"].ToString();
+        private string UserId => HttpContext.Items["UserId"].ToString();
 
         [HttpGet]
         public async Task<IActionResult> GetCart()
         {
-            var cartList = await cartCache.GetAllAsync(userId);
+            var cartList = await cartCache.GetAllAsync(UserId);
             if (cartList == null)
             {
-                logger.LogInformation("{userId} cart empty", userId);
+                logger.LogInformation("{userId} cart empty", UserId);
                 return Ok(new List<object>());
             }
 
@@ -34,24 +34,24 @@ namespace ShoppingCartService.Controllers
                 Quantity = (int)x.Value
             });
 
-            logger.LogInformation("Found {userId} cart", userId);
+            logger.LogInformation("Found {userId} cart", UserId);
 
             return Ok(response);
         }
         [HttpPost]
         public async Task<IActionResult> AddOrUpdateQuantityAsync(int ProductId, int Amount = 1)
         {
-            await cartCache.AddOrUpdateAsync(userId, ProductId, Amount);
+            await cartCache.AddOrUpdateAsync(UserId, ProductId, Amount);
 
-            logger.LogInformation("Updated {userId} item {productId}", userId, ProductId);
+            logger.LogInformation("Updated {userId} item {productId}", UserId, ProductId);
 
             return Created();
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteCartItem(int ProductId)
         {
-            await cartCache.DeleteAsync(userId, ProductId);
-            logger.LogInformation("Deleted from {userId} item {productId}", userId, ProductId);
+            await cartCache.DeleteAsync(UserId, ProductId);
+            logger.LogInformation("Deleted from {userId} item {productId}", UserId, ProductId);
             return Ok();
         }
     }

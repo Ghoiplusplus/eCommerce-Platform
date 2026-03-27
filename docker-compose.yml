@@ -68,6 +68,7 @@ services:
     image: ${DOCKER_REGISTRY-}shoppingcart
     restart: always
     container_name: shopping-cart
+    environment: *secret
     build:
       context: .
       dockerfile: ProductCatalog/Dockerfile
