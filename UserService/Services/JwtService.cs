@@ -12,7 +12,7 @@ namespace UserService.Services
         public string GenerateJwtToken(UserModel user)
         {
             var claims = new List<Claim> {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+                new Claim("UserId", user.UserId.ToString())
             };
             // создаем JWT-токен
             var jwt = new JwtSecurityToken(

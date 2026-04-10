@@ -16,8 +16,7 @@ namespace OrderService.Controllers
         {
             this.orderContext = orderContext;
         }
-
-        private string userId => HttpContext.Items["UserId"]?.ToString();
+        string userId => HttpContext.Request.Headers["UserId"].ToString();
 
         [HttpPost]
         public async Task<IActionResult> CreateOrderAsync([FromBody] OrderModel order)

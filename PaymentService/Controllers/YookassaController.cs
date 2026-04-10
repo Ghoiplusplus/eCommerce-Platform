@@ -8,22 +8,22 @@ namespace PaymentService.Controllers
     public class YookassaController : ControllerBase
     {
         private YookassaService _yookassaService;
-        private ILogger _logger;
+        private ILogger<YookassaController> _logger;
 
-        public YookassaController(YookassaService yookassaService, ILogger logger)
+        public YookassaController(YookassaService yookassaService, ILogger<YookassaController> logger)
         {
             this._yookassaService = yookassaService;
             this._logger = logger;
         }
+        string userId => HttpContext.Request.Headers["UserId"].ToString();
 
-        string userId => HttpContext.Items["UserId"]?.ToString();
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] int amount)
+        public async Task<IActionResult> CreatePayment([FromQuery] int amount)
         {
-            string returnUrl = _yookassaService.CreatePayment(amount);
-            _logger.LogInformation("Created new payment {userId}", userId);
+            string paymentUrl = _yookassaService.CreatePayment(amount);
+            _logger.LogInformation("Created new payment for {userId}: {paymentUrl}", userId, paymentUrl);
 
-            return Redirect(returnUrl);
+            return Redirect(paymentUrl);
         }
     }
 }

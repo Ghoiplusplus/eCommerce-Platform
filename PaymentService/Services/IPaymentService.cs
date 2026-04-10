@@ -1,7 +1,7 @@
 ﻿namespace PaymentService.Services
 {
-    public interface IPaymentService<T> where T : class
+    public interface IPaymentService
     {
-        T CreatePayment(int amount);
+        string CreatePayment(int amount);
     }
 }

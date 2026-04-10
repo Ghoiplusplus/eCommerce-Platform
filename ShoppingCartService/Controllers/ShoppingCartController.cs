@@ -16,7 +16,7 @@ namespace ShoppingCartService.Controllers
             this.logger = logger;
         }
 
-        private string UserId => HttpContext.Items["UserId"].ToString();
+        string UserId => HttpContext.Request.Headers["UserId"].ToString();
 
         [HttpGet]
         public async Task<IActionResult> GetCart()

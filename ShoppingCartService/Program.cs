@@ -1,14 +1,11 @@
 using Serilog;
 using ShoppingCart.Repository;
-using System.Security.Claims;
-using UserService.JwtConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddJwtAuthentication();
 builder.Services.AddSingleton<RedisRepository>();
 builder.Services.AddSerilog((services, loggConf) => loggConf
     .ReadFrom.Configuration(builder.Configuration)
@@ -17,21 +14,6 @@ builder.Services.AddSerilog((services, loggConf) => loggConf
     .WriteTo.Console());
 
 var app = builder.Build();
-
-app.Use(async (context, next) =>
-{
-    string? userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(userId))
-    {
-        context.Response.StatusCode = 401;
-        await context.Response.WriteAsync("No GUID (middleware)");
-    }
-    else
-    {
-        context.Items["UserId"] = userId;
-        await next.Invoke(context);
-    }
-});
 
 app.MapControllers();
 

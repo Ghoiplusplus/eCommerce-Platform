@@ -3,7 +3,7 @@ using Yandex.Checkout.V3;
 
 namespace PaymentService.Services
 {
-    public class YookassaService : IPaymentService<string>
+    public class YookassaService : IPaymentService
     {
         private YookassaSettings _paymentSettings { get; init; }
         private Client _client { get; init; }

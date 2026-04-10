@@ -13,6 +13,7 @@ namespace UserService.Controllers
         private readonly UserContext userContext;
         private readonly ILogger<AuthController> logger;
 
+        string UserId => HttpContext.Request.Headers["UserId"].ToString();
         public AuthController(IJwtService jwtService, UserContext userContext, ILogger<AuthController> logger)
         {
             this.jwtService = jwtService;
@@ -34,7 +35,7 @@ namespace UserService.Controllers
         [HttpGet("profile")]
         public async Task<IActionResult> Profile()
         {
-            return Ok($"Пользователь авторизован \\n{HttpContext.Request.Headers.Authorization}");
+            return Ok($"Пользователь авторизован \\n{UserId}");
         }
     }
 }

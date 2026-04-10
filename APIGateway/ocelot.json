@@ -31,7 +31,10 @@
           "Host": "userservice",
           "Port": 8080
         }
-      ]
+      ],
+      "AddHeadersToRequest": {
+        "UserId": "Claims[UserId] > value[0] > |"
+      }
     },
 
     // product catalog routing
@@ -77,7 +80,10 @@
           "Host": "productcatalog",
           "Port": 8080
         }
-      ]
+      ],
+      "AddHeadersToRequest": {
+        "UserId": "Claims[UserId] > value[0] > |"
+      }
     }
 
   ]
