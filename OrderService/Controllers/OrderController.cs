@@ -10,11 +10,13 @@ namespace OrderService.Controllers
     [Route("/api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private OrderContext orderContext;
+        private OrderContext _orderContext;
+        private ILogger<OrderController> _logger;
 
-        public OrderController(OrderContext orderContext)
+        public OrderController(OrderContext orderContext, ILogger<OrderController> logger)
         {
-            this.orderContext = orderContext;
+            _orderContext = orderContext;
+            _logger = logger;
         }
         string userId => HttpContext.Request.Headers["UserId"].ToString();
 
@@ -23,8 +25,10 @@ namespace OrderService.Controllers
         {
             order.UserId = new Guid(userId);
 
-            orderContext.Add(order);
-            await orderContext.SaveChangesAsync();
+            _orderContext.Add(order);
+            await _orderContext.SaveChangesAsync();
+
+            _logger.LogInformation("Created new order for {UserId}", userId);
 
             return Created();
         }
@@ -32,18 +36,23 @@ namespace OrderService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOrdersAsync()
         {
-            var orders = await orderContext.Users
+            var orders = await _orderContext.Users
                 .Where(u => u.UserId.ToString() == userId)
                 .ToListAsync();
+
+            _logger.LogInformation("Get {UserId} orders", userId);
+
             return Ok(orders);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetOrderByIdAsync(int id)
         {
-            var order = await orderContext.Users
+            var order = await _orderContext.Users
                 .Where(u => u.UserId.ToString() == userId && u.Id == id)
                 .ToListAsync();
+
+            _logger.LogInformation("Get {Id} order from {UserId}", id, userId);
 
             return Ok(order);
         }
@@ -51,23 +60,35 @@ namespace OrderService.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UdpateOrderAsync(int id, [FromBody] OrderDTO newOrder)
         {
-            var orderToUpdate = orderContext.Users.FirstOrDefault(u => u.Id == id && u.UserId.ToString() == userId);
-            if (orderToUpdate == null) return BadRequest("Bad order id");
+            var orderToUpdate = _orderContext.Users.FirstOrDefault(u => u.Id == id && u.UserId.ToString() == userId);
+            if (orderToUpdate == null)
+            {
+                _logger.LogInformation("No {Id} order from {UserId}", id, userId);
+                return BadRequest("Bad order id");
+            }
 
-            orderContext.Users.Entry(orderToUpdate).CurrentValues.SetValues(newOrder);
-            await orderContext.SaveChangesAsync();
+            _orderContext.Users.Entry(orderToUpdate).CurrentValues.SetValues(newOrder);
+            await _orderContext.SaveChangesAsync();
+
+            _logger.LogInformation("Updated {Id} order of {UserId}", id, userId);
 
             return Ok("Updated");
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> GetOrders(int id)
+        public async Task<IActionResult> DeleteOrdersAsync(int id)
         {
-            var orderToDelete = orderContext.Users.FirstOrDefault(u => u.Id == id && u.UserId.ToString() == userId);
-            if (orderToDelete == null) return BadRequest("Bad order id");
+            var orderToDelete = _orderContext.Users.FirstOrDefault(u => u.Id == id && u.UserId.ToString() == userId);
+            if (orderToDelete == null)
+            {
+                _logger.LogInformation("No {Id} order from {UserId}", id, userId);
+                return BadRequest("Bad order id");
+            }
 
-            orderContext.Remove(orderToDelete);
-            await orderContext.SaveChangesAsync();
+            _orderContext.Remove(orderToDelete);
+            await _orderContext.SaveChangesAsync();
+
+            _logger.LogInformation("Deleted {Id} order of {UserId}", id, userId);
 
             return Ok("Deleted");
         }

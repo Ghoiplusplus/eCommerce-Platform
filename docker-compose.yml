@@ -13,8 +13,6 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_PASSWORD: 123456
-    depends_on:
-        - userservice
     ports:
         - "5432:5432"
     volumes:
@@ -27,25 +25,35 @@ services:
     shm_size: 128mb
     environment:
         POSTGRES_PASSWORD: 123456
-    depends_on:
-        - userservice
     ports:
         - "5433:5432"
     volumes:
       - postgres-order:/data
 
-  redisDB:
+  postgres-catalog:
+     image: postgres
+     container_name: postgres-catalog
+     restart: always
+     shm_size: 128mb
+     environment:
+        POSTGRES_PASSWORD: 123456
+     ports:
+        - "5434:5432"
+     volumes:
+      - postgres-catalog:/data
+
+  redisDB-cart:
     image: redis
     restart: always
     container_name: redis-database
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - redis-cart:/data
 
-  mongoDB:
+  mongoDB-payment:
     image: mongo
-    container_name: mongo
+    container_name: mongo-payment
     restart: always
     ports:
         - "27017:27017"
@@ -57,7 +65,7 @@ services:
     image: mongo-express
     restart: always
     depends_on:
-      - mongoDB 
+      - mongoDB-payment
     ports:
       - 8081:8081
     environment:
@@ -65,6 +73,8 @@ services:
       ME_CONFIG_BASICAUTH_ENABLED: true
       ME_CONFIG_BASICAUTH_USERNAME: mongoexpressuser
       ME_CONFIG_BASICAUTH_PASSWORD: mongoexpresspass
+
+
 
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
@@ -86,28 +96,40 @@ services:
       dockerfile: ProductCatalog/Dockerfile
     depends_on:
         - userservice
+        - postgres-catalog
 
   shoppingcart:
     image: ${DOCKER_REGISTRY-}shoppingcart
     restart: always
     container_name: shopping-cart
-    environment: *secret
     build:
       context: .
-      dockerfile: ProductCatalog/Dockerfile
+      dockerfile: ShoppingCartService/Dockerfile
     depends_on:
         - userservice
+        - redisDB-cart
+
+  orderservice:
+    image: ${DOCKER_REGISTRY-}orderservice
+    restart: always
+    container_name: order-service
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    depends_on:
+        - userservice
+        - postgres-order
 
   paymentservice:
     image: ${DOCKER_REGISTRY-}paymentservice
     restart: always
     container_name: payment-service
-    environment: *secret
     build:
       context: .
       dockerfile: PaymentService/Dockerfile
     depends_on:
         - userservice
+        - mongoDB-payment
 
   apigateway:
     image: ${DOCKER_REGISTRY-}apigateway
@@ -124,6 +146,7 @@ services:
 
 
 volumes:
-    redis-data:
+    redis-cart:
     postgres-order:
     postgres-user:
+    postgres-catalog:

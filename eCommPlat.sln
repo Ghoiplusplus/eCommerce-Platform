@@ -12,9 +12,9 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIGateway", "APIGateway\APIGateway.csproj", "{827A4470-602F-483F-8D92-793BB809C20A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductCatalog", "ProductCatalog\ProductCatalog.csproj", "{002623C3-5D50-474E-BB12-ABE8171BA47F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductCatalogService", "ProductCatalog\ProductCatalogService.csproj", "{002623C3-5D50-474E-BB12-ABE8171BA47F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCart", "ShoppingCartService\ShoppingCart.csproj", "{0CE2E46A-BFB5-49CB-96C1-DBF9F095965D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingCartService", "ShoppingCartService\ShoppingCartService.csproj", "{0CE2E46A-BFB5-49CB-96C1-DBF9F095965D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{9E8D710C-9E7C-4C75-8EC5-B3195280F229}"
 EndProject
@@ -31,6 +31,7 @@ Global
 		{CC118F59-B785-4A42-A256-54BAE168931E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC118F59-B785-4A42-A256-54BAE168931E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{827A4470-602F-483F-8D92-793BB809C20A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

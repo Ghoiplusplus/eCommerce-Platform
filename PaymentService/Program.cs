@@ -10,7 +10,9 @@ builder.Services.AddSingleton(new MongoClient(
     builder.Configuration.GetConnectionString(
         builder.Environment.IsDevelopment() ? "Development" : "DefaultConnection"
     )));
+
 builder.Services.AddSingleton<YookassaService>();
+
 builder.Services.AddSerilog((services, loggConf) => loggConf
     .ReadFrom.Configuration(builder.Configuration)
     .ReadFrom.Services(services)
